@@ -799,7 +799,7 @@ def render_well_map(df):
 
 
 def render_oil_price_section():
-    st.markdown('<div class="section-label">Global oil price — WTI & Brent crude (USD/barrel)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">Global oil price — Daily Brent crude price (USD/barrel)</div>', unsafe_allow_html=True)
 
     with st.spinner(""):
         oil_df = load_oil_prices()
@@ -813,21 +813,40 @@ def render_oil_price_section():
 
     oil_reset = oil_df.reset_index()
     oil_reset.columns = ['Date', 'WTI', 'Brent']
-
-    fig = px.line(
-        oil_reset,
-        x='Date',
-        y=['WTI', 'Brent'],
-        color_discrete_sequence=['#c8d4f0', '#4a5a80']
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=oil_reset['Date'],
+            y=oil_reset['Brent'],
+            mode='lines',
+            name='Brent',
+            line=dict(color='#c8d4f0', width=2.4),
+            hovertemplate='%{x|%Y-%m-%d}<br>Price: %{y:.2f}<extra></extra>',
+        )
     )
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
         font=dict(family='Sora', color='#7a7a96', size=11),
-        xaxis=dict(showgrid=False, color='#4a4a60', title=''),
-        yaxis=dict(showgrid=True, gridcolor='rgba(255,255,255,0.05)', color='#4a4a60', title='USD / barrel'),
+        xaxis=dict(
+            showgrid=False,
+            showline=True,
+            linecolor='rgba(255,255,255,0.22)',
+            linewidth=1,
+            color='#4a4a60',
+            title='',
+        ),
+        yaxis=dict(
+            showgrid=True,
+            gridcolor='rgba(255,255,255,0.05)',
+            showline=True,
+            linecolor='rgba(255,255,255,0.22)',
+            linewidth=1,
+            color='#4a4a60',
+            title='USD / barrel',
+        ),
         margin=dict(l=0, r=0, t=0, b=0),
-        legend=dict(font=dict(color='#7a7a96'), bgcolor='rgba(0,0,0,0)')
+        legend=dict(title_text='', font=dict(color='#7a7a96'), bgcolor='rgba(0,0,0,0)')
     )
     st.plotly_chart(fig, use_container_width=True)
 
