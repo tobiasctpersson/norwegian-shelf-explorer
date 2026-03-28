@@ -631,14 +631,12 @@ def render_page_header(current_page):
         selected_page = st.segmented_control(
             "Page",
             options=["Overview", "Operators", "Wells", "Well Detail"],
-            default=current_page,
+            key="page",
             label_visibility="collapsed",
             width="stretch",
         )
 
     active_page = selected_page or current_page
-    if active_page != current_page:
-        st.session_state['page'] = active_page
 
     if active_page == "Overview":
         st.markdown("<h1 style='font-size:40px; margin-bottom:8px;'>Norwegian Shelf Explorer</h1>", unsafe_allow_html=True)
@@ -1373,7 +1371,10 @@ with st.spinner(""):
     df = load_wellbore_data()
     stats = get_summary_stats(df)
 
-current_page = st.session_state.get('page', 'Overview')
+if 'page' not in st.session_state:
+    st.session_state['page'] = 'Overview'
+
+current_page = st.session_state['page']
 current_page = render_page_header(current_page)
 
 if current_page == 'Operators':
