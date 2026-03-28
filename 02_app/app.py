@@ -8,7 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from data_fetcher import get_summary_stats, load_wellbore_data
+from data_fetcher import get_summary_stats, load_field_outlines, load_wellbore_data
 from llm_query import ask_claude
 from oil_price import load_oil_prices
 
@@ -679,7 +679,7 @@ def render_metric_cards(stats):
         </div>""", unsafe_allow_html=True)
 
 
-def render_well_map(df):
+def render_well_map(df, field_outlines):
     mapped_wells = df.dropna(subset=['NS decimal degrees', 'EW decimal degrees']).copy()
     mapped_wells['Operator'] = mapped_wells['Drilling operator'].fillna('Unknown')
 
@@ -687,7 +687,8 @@ def render_well_map(df):
     operator_colors = dict(
         zip(operator_counts.index, build_gradient('#7c1018', '#7aa6d8', len(operator_counts)))
     )
-
+    field_line_color = '#b66d5d'
+    field_label_color = 'rgba(214, 180, 173, 0.68)'
     country_labels = [
         {"name": "Norway", "lat": 64.8, "lon": 11.0},
         {"name": "Sweden", "lat": 62.0, "lon": 16.0},
@@ -698,12 +699,49 @@ def render_well_map(df):
         {"name": "Germany", "lat": 51.2, "lon": 10.4},
     ]
 
-    # Use a more landscape-shaped North Sea viewport so the geo projection
-    # fills the available horizontal space instead of appearing tall/narrow.
     overview_lat_range = [55.6, 63.6]
     overview_lon_range = [-10.2, 14.8]
 
     map_fig = go.Figure()
+    field_labels = field_outlines.get('labels', [])
+    field_outline_records = field_outlines.get('outlines', field_outlines.get('labels', []))
+
+    for field in field_outline_records:
+        for ring in field.get('rings', []):
+            lons = [point[0] for point in ring]
+            lats = [point[1] for point in ring]
+            map_fig.add_trace(
+                go.Scattergeo(
+                    lon=lons,
+                    lat=lats,
+                    mode='lines',
+                    line=dict(color=field_line_color, width=0.8),
+                    name=field['field_name'],
+                    text=field['field_name'],
+                    customdata=[[field['main_area'], field['field_id']]] * len(ring),
+                    hovertemplate=(
+                        '<b>%{text}</b><br>'
+                        'Area: %{customdata[0]}<br>'
+                        'Field ID: %{customdata[1]}<extra></extra>'
+                    ),
+                    showlegend=False,
+                )
+            )
+
+    for field in field_labels:
+        if pd.notna(field['label_lat']) and pd.notna(field['label_lon']):
+            map_fig.add_trace(
+                go.Scattergeo(
+                    lon=[field['label_lon']],
+                    lat=[field['label_lat']],
+                    mode='text',
+                    text=[field['field_name']],
+                    textfont=dict(family='DM Mono', size=7, color=field_label_color),
+                    hoverinfo='skip',
+                    showlegend=False,
+                )
+            )
+
     for operator, operator_df in mapped_wells.groupby('Operator', sort=False):
         map_fig.add_trace(
             go.Scattergeo(
@@ -748,9 +786,9 @@ def render_well_map(df):
         showland=True,
         landcolor='#141823',
         showocean=True,
-        oceancolor='#090c14',
+        oceancolor='#0f1116',
         showlakes=True,
-        lakecolor='#090c14',
+        lakecolor='#0f1116',
         showcoastlines=True,
         coastlinecolor='rgba(255,255,255,0.22)',
         showcountries=True,
@@ -873,7 +911,11 @@ def render_overview_page(df, stats):
     st.markdown("<div style='margin: 48px 0 0;'></div>", unsafe_allow_html=True)
 
     st.markdown('<div class="section-label">Exploration wells mapped by SODIR coordinates</div>', unsafe_allow_html=True)
-    render_well_map(df)
+    try:
+        field_outlines = load_field_outlines()
+    except Exception:
+        field_outlines = {"geojson": {"type": "FeatureCollection", "features": []}, "labels": [], "outlines": []}
+    render_well_map(df, field_outlines)
 
     render_oil_price_section()
 
