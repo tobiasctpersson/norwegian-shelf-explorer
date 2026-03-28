@@ -812,6 +812,25 @@ def render_oil_price_section():
     oil_reset = oil_df.reset_index()
     oil_reset.columns = ['Date', 'WTI', 'Brent']
     fig = go.Figure()
+    band_count = 12
+    band_levels = np.linspace(1 / band_count, 1, band_count)
+    base_rgb = (200, 212, 240)
+
+    for idx, level in enumerate(band_levels, start=1):
+        opacity = 0.01 + (idx / band_count) * 0.11
+        fig.add_trace(
+            go.Scatter(
+                x=oil_reset['Date'],
+                y=oil_reset['Brent'] * level,
+                mode='lines',
+                line=dict(width=0, color='rgba(0,0,0,0)'),
+                fill='tozeroy' if idx == 1 else 'tonexty',
+                fillcolor=f'rgba({base_rgb[0]}, {base_rgb[1]}, {base_rgb[2]}, {opacity:.3f})',
+                hoverinfo='skip',
+                showlegend=False,
+            )
+        )
+
     fig.add_trace(
         go.Scatter(
             x=oil_reset['Date'],
