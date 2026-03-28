@@ -1,0 +1,7 @@
+factpages-py
+streamlit
+anthropic
+pandas
+plotly
+python-dotenv
+requests
