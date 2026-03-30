@@ -357,6 +357,91 @@ div[data-testid="stDataFrame"] {
 }
 
 footer, #MainMenu, header { display: none !important; }
+
+@media (max-width: 820px) {
+  .block-container {
+    max-width: 100%;
+    padding: 18px 14px 32px !important;
+  }
+
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+  }
+
+  .metric-card,
+  .detail-block,
+  .answer-box,
+  .legend-panel,
+  .signal-legend-item {
+    padding: 14px 14px;
+  }
+
+  .metric-value {
+    font-size: 22px;
+  }
+
+  .metric-label,
+  .legend-title,
+  .detail-heading {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+  }
+
+  .subtle-copy,
+  .detail-value,
+  .detail-key {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .legend-panel {
+    height: auto;
+    max-height: none;
+    margin-top: 12px;
+  }
+
+  div[data-baseweb="segmented-control"] {
+    padding: 6px !important;
+    border-radius: 16px !important;
+  }
+
+  div[data-baseweb="segmented-control"] button {
+    min-height: 40px !important;
+    font-size: 12px !important;
+    padding: 8px 10px !important;
+  }
+
+  [data-testid="stHorizontalBlock"] {
+    gap: 0.8rem !important;
+  }
+
+  [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+    min-width: 0 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  [data-testid="stHorizontalBlock"] {
+    flex-direction: column !important;
+  }
+
+  [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+    width: 100% !important;
+    flex: 1 1 100% !important;
+  }
+
+  .signal-legend-item {
+    width: 100%;
+  }
+
+  .legend-item {
+    align-items: flex-start;
+  }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -483,6 +568,46 @@ def render_overview_hero():
             font-size: 14px;
             line-height: 1.7;
             color: rgba(232,232,240,0.72);
+          }}
+
+          @media (max-width: 820px) {{
+            .hero-shell {{
+              height: 62vh;
+              min-height: 430px;
+              max-height: 560px;
+            }}
+
+            .hero-copy {{
+              padding: 20px 18px;
+            }}
+
+            .hero-kicker {{
+              font-size: 9px;
+              letter-spacing: 0.22em;
+              margin-bottom: 14px;
+            }}
+
+            .hero-title {{
+              font-size: clamp(34px, 11vw, 60px);
+            }}
+
+            .hero-subtitle {{
+              margin-top: 12px;
+              max-width: 92%;
+              font-size: 12px;
+              line-height: 1.55;
+            }}
+          }}
+
+          @media (max-width: 560px) {{
+            .hero-shell {{
+              height: 56vh;
+              min-height: 360px;
+            }}
+
+            .hero-title {{
+              font-size: clamp(30px, 10.5vw, 48px);
+            }}
           }}
         </style>
       </head>
@@ -848,6 +973,56 @@ def render_scroll_reveal_brent_chart(oil_df):
             fill: rgba(182,109,93,0.18);
             stroke: rgba(182,109,93,0.72);
             stroke-width: 1.4;
+          }}
+
+          @media (max-width: 820px) {{
+            .chart-shell {{
+              height: 590px;
+              padding: 14px 14px 10px;
+            }}
+
+            .chart-topline {{
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+              gap: 10px;
+              margin-bottom: 14px;
+            }}
+
+            .market-stat {{
+              min-height: 72px;
+              padding: 12px 12px 10px;
+            }}
+
+            .market-value {{
+              font-size: 20px;
+            }}
+
+            .market-meta {{
+              font-size: 11px;
+            }}
+          }}
+
+          @media (max-width: 560px) {{
+            .chart-shell {{
+              height: 560px;
+              padding: 12px 10px 10px;
+            }}
+
+            .chart-topline {{
+              grid-template-columns: 1fr;
+              gap: 8px;
+            }}
+
+            .market-stat {{
+              min-height: auto;
+            }}
+
+            .tick-label {{
+              font-size: 11px;
+            }}
+
+            .y-label {{
+              font-size: 14px;
+            }}
           }}
         </style>
       </head>
@@ -1531,6 +1706,34 @@ def build_overview_map_html(mapped_wells, field_outline_records, operator_colors
             display: block;
             margin-bottom: 3px;
             font-weight: 600;
+          }}
+
+          @media (max-width: 820px) {{
+            #overview-map {{
+              height: 500px;
+              border-radius: 18px;
+            }}
+
+            .field-label-text {{
+              font-size: 9px;
+            }}
+          }}
+
+          @media (max-width: 560px) {{
+            #overview-map {{
+              height: 440px;
+              border-radius: 14px;
+            }}
+
+            .leaflet-control-scale {{
+              display: none;
+            }}
+
+            .field-tooltip-shell .leaflet-tooltip-content,
+            .well-tooltip-shell .leaflet-tooltip-content {{
+              margin: 8px 10px;
+              font-size: 11px;
+            }}
           }}
         </style>
       </head>
